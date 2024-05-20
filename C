@@ -1,0 +1,124 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+// Card values
+#define ACE 11
+#define FACE_CARD 10
+
+// Function prototypes
+int drawCard();
+void printCard(int card);
+int calculateHandValue(int hand[], int numCards);
+void playBlackjack();
+
+int main() {
+    srand(time(NULL));
+    playBlackjack();
+    return 0;
+}
+
+// Function to draw a card (values between 2 and 11)
+int drawCard() {
+    int card = rand() % 13 + 1;
+    if (card > 10) { // Face cards
+        return FACE_CARD;
+    }
+    return card;
+}
+
+// Function to print card
+void printCard(int card) {
+    switch(card) {
+        case 1: printf("Ace "); break;
+        case 11: printf("Jack "); break;
+        case 12: printf("Queen "); break;
+        case 13: printf("King "); break;
+        default: printf("%d ", card); break;
+    }
+}
+
+// Function to calculate the value of a hand
+int calculateHandValue(int hand[], int numCards) {
+    int value = 0, aceCount = 0;
+    for (int i = 0; i < numCards; i++) {
+        value += hand[i];
+        if (hand[i] == ACE) {
+            aceCount++;
+        }
+    }
+    while (value > 21 && aceCount > 0) {
+        value -= 10; // Convert Ace from 11 to 1
+        aceCount--;
+    }
+    return value;
+}
+
+// Function to play a game of Blackjack
+void playBlackjack() {
+    int playerHand[10], dealerHand[10];
+    int playerCardCount = 0, dealerCardCount = 0;
+    char choice;
+
+    // Initial dealing
+    playerHand[playerCardCount++] = drawCard();
+    playerHand[playerCardCount++] = drawCard();
+    dealerHand[dealerCardCount++] = drawCard();
+    dealerHand[dealerCardCount++] = drawCard();
+
+    // Player's turn
+    printf("Player's Hand: ");
+    for (int i = 0; i < playerCardCount; i++) {
+        printCard(playerHand[i]);
+    }
+    printf("\n");
+
+    while (1) {
+        printf("Do you want to (h)it or (s)tand? ");
+        scanf(" %c", &choice);
+        if (choice == 'h') {
+            playerHand[playerCardCount++] = drawCard();
+            printf("Player's Hand: ");
+            for (int i = 0; i < playerCardCount; i++) {
+                printCard(playerHand[i]);
+            }
+            printf("\n");
+            if (calculateHandValue(playerHand, playerCardCount) > 21) {
+                printf("Player busts! Dealer wins.\n");
+                return;
+            }
+        } else if (choice == 's') {
+            break;
+        }
+    }
+
+    // Dealer's turn
+    printf("Dealer's Hand: ");
+    for (int i = 0; i < dealerCardCount; i++) {
+        printCard(dealerHand[i]);
+    }
+    printf("\n");
+
+    while (calculateHandValue(dealerHand, dealerCardCount) < 17) {
+        dealerHand[dealerCardCount++] = drawCard();
+        printf("Dealer's Hand: ");
+        for (int i = 0; i < dealerCardCount; i++) {
+            printCard(dealerHand[i]);
+        }
+        printf("\n");
+    }
+
+    int playerValue = calculateHandValue(playerHand, playerCardCount);
+    int dealerValue = calculateHandValue(dealerHand, dealerCardCount);
+
+    // Determine the winner
+    if (dealerValue > 21) {
+        printf("Dealer busts! Player wins.\n");
+    } else if (playerValue > dealerValue) {
+        printf("Player wins!\n");
+    } else if (playerValue < dealerValue) {
+        printf("Dealer wins.\n");
+    } else {
+        printf("It's a tie!\n");
+    }
+}
