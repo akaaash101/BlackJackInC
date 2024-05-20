@@ -67,26 +67,26 @@ void playBlackjack() {
     dealerHand[dealerCardCount++] = drawCard();
 
     // Player's turn
-    printf("Player's Hand: ");
-    for (int i = 0; i < playerCardCount; i++) {
-        printCard(playerHand[i]);
-    }
-    printf("\n");
-
     while (1) {
+        printf("Player's Hand: ");
+        for (int i = 0; i < playerCardCount; i++) {
+            printCard(playerHand[i]);
+        }
+        printf("(Total: %d)\n", calculateHandValue(playerHand, playerCardCount));
+        
+        printf("Dealer's Hand: ");
+        printCard(dealerHand[0]);  // Only show one of the dealer's cards
+        printf("?\n");
+
+        if (calculateHandValue(playerHand, playerCardCount) > 21) {
+            printf("Player busts! Dealer wins.\n");
+            return;
+        }
+
         printf("Do you want to (h)it or (s)tand? ");
         scanf(" %c", &choice);
         if (choice == 'h') {
             playerHand[playerCardCount++] = drawCard();
-            printf("Player's Hand: ");
-            for (int i = 0; i < playerCardCount; i++) {
-                printCard(playerHand[i]);
-            }
-            printf("\n");
-            if (calculateHandValue(playerHand, playerCardCount) > 21) {
-                printf("Player busts! Dealer wins.\n");
-                return;
-            }
         } else if (choice == 's') {
             break;
         }
@@ -97,7 +97,7 @@ void playBlackjack() {
     for (int i = 0; i < dealerCardCount; i++) {
         printCard(dealerHand[i]);
     }
-    printf("\n");
+    printf("(Total: %d)\n", calculateHandValue(dealerHand, dealerCardCount));
 
     while (calculateHandValue(dealerHand, dealerCardCount) < 17) {
         dealerHand[dealerCardCount++] = drawCard();
@@ -105,11 +105,24 @@ void playBlackjack() {
         for (int i = 0; i < dealerCardCount; i++) {
             printCard(dealerHand[i]);
         }
-        printf("\n");
+        printf("(Total: %d)\n", calculateHandValue(dealerHand, dealerCardCount));
     }
 
     int playerValue = calculateHandValue(playerHand, playerCardCount);
     int dealerValue = calculateHandValue(dealerHand, dealerCardCount);
+
+    // Final hands and totals
+    printf("Final Player's Hand: ");
+    for (int i = 0; i < playerCardCount; i++) {
+        printCard(playerHand[i]);
+    }
+    printf("(Total: %d)\n", playerValue);
+
+    printf("Final Dealer's Hand: ");
+    for (int i = 0; i < dealerCardCount; i++) {
+        printCard(dealerHand[i]);
+    }
+    printf("(Total: %d)\n", dealerValue);
 
     // Determine the winner
     if (dealerValue > 21) {
